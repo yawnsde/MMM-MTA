@@ -10,23 +10,17 @@
 Module.register('MMM-MTA',{
 
 	defaults: {
-		longitude: "",
-		latitude: "",
-		length: "",
-		appid: "",
+		mtaAPIKey: "",
 		units: config.units,
 		animationSpeed: 1000,
 		updateInterval: 1000 * 3600, //update every hour
 		timeFormat: config.timeFormat,
 		lang: config.language,
 
-		lowtideSymbol: "fa fa-download",
-		hightideSymbol: "fa fa-upload",
-
 		initialLoadDelay: 0, // 0 seconds delay
 		retryDelay: 2500,
 
-		apiBase: "http://www.worldtides.info/api",
+		apiBase: "https://traintime.lirr.org/api/Departure",
 	},
 
 	// Define required scripts.
@@ -46,8 +40,6 @@ Module.register('MMM-MTA',{
 
 		this.updateTimer = null;
 
-		this.config.header = "HALLO";
-
 		var self = this;
 		setInterval(function() {
 			self.updateDom();
@@ -58,14 +50,14 @@ Module.register('MMM-MTA',{
 	getDom: function() {
 		var wrapper = document.createElement("div");
 
-		if (this.config.appid === "") {
-			wrapper.innerHTML = "Please set the correct worldtides.info <i>appid</i> in the config for module: " + this.name + ".";
+		if (this.config.mtaAPIKey === "") {
+			wrapper.innerHTML = "Please set the correct <i>API KEY</i> in the config for module: " + this.name + ".";
 			wrapper.className = "dimmed light small";
 			return wrapper;
 		}
 
-		if (this.config.longitude === "" || this.config.latitude === "") {
-			wrapper.innerHTML = "Please set the worldtides.info <i>longitude/latitude</i> in the config for module: " + this.name + ".";
+		if (this.config.sStation === "") {
+			wrapper.innerHTML = "Please set the <i>sStaion</i> in the config for module: " + this.name + ".";
 			wrapper.className = "dimmed light small";
 			return wrapper;
 		}
@@ -143,29 +135,29 @@ Module.register('MMM-MTA',{
 		return wrapper;
 	},
 
-	/* updateTides
-	 * Requests new data from worldtides.info
-	 * Calls processTides on succesfull response.
+	/* updateTrains
+	 * Requests new data
+	 * Calls processTrains on succesfull response.
 	 */
-	updateTides: function() {
+	updateTrains: function() {
 		var url = this.config.apiBase + this.getParams();
 		var self = this;
 		var retry = true;
 
-		var tidesRequest = new XMLHttpRequest();
-		tidesRequest.open("GET", url, true);
-		tidesRequest.onreadystatechange = function() {
+		var myRequest = new XMLHttpRequest();
+		myRequest.open("GET", url, true);
+		myRequest.onreadystatechange = function() {
 			if (this.readyState === 4) {
 				if (this.status === 200) {
 					self.processTides(JSON.parse(this.response));
 				} else if (this.status === 400) {
-					self.config.appid = "";
+					self.config.mtaAPIKey = "";
 					self.updateDom(self.config.animationSpeed);
 
-					Log.error(self.name + ": Incorrect APPID.");
+					Log.error(self.name + ": Incorrect API KEY.");
 					retry = false;
 				} else {
-					Log.error(self.name + ": Could not load tides.");
+					Log.error(self.name + ": Could not load data.");
 				}
 
 				if (retry) {
@@ -173,7 +165,7 @@ Module.register('MMM-MTA',{
 				}
 			}
 		};
-		tidesRequest.send();
+		myRequest.send();
 	},
 
 	/* getParams
@@ -182,38 +174,32 @@ Module.register('MMM-MTA',{
 	 * return String - URL params.
 	 */
 	getParams: function() {
-		var params = "?extremes";
-		params += "&lat=" + this.config.latitude;
-		params += "&lon=" + this.config.longitude;
-		if(this.config.length !== "") {
-			params += "&length=" + this.config.length;
-		}
-		params += "&start=" + moment().startOf('date').unix();
-		params += "&key=" + this.config.appid;
+		var params = "?loc=" + this.config.sStation;
+		params += "&api_key=" + this.config.mtaAPIKey;
 
 		return params;
 	},
 
-	/* processTides(data)
+	/* processTrains(data)
 	 * Uses the received data to set the various values.
 	 *
-	 * argument data object - tide information received form worldtides.info
 	 */
-	processTides: function(data) {
+	processTrains: function(data) {
 
-		if (!data.extremes) {
+		if (!data.TRAINS) {
 			// Did not receive usable new data.
 			// Maybe this needs a better check?
 			return;
 		}
 
-		this.tides = [];
+		this.trains = [];
 
-		for (var i in data.extremes) {
-			var t = data.extremes[i];
-			this.tides.push({
+		for (var i in data.TRAINS) {
+			var t = data.TRAINS[i];
+			this.trains.push({
 
-				dt: t.dt,
+				schedule: t.SCHED,
+				delay: "1", // to be continued
 				date: moment(t.dt, "X").format("YYYY-MM-DD"),
 				day: moment(t.dt, "X").format("ddd"),
 				time: ((this.config.timeFormat === 24) ? moment(t.dt, "X").format("HH:mm") : moment(t.dt, "X").format("hh:mm a")),
@@ -238,7 +224,7 @@ Module.register('MMM-MTA',{
 
 		var self = this;
 		setTimeout(function() {
-			self.updateTides();
+			self.updateTrains();
 		}, nextLoad);
 	},
 
