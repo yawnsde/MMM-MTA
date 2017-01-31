@@ -1,0 +1,23 @@
+{
+  "name": "MMM-MTA",
+  "version": "1.0.0",
+  "description": "NY MTA train alerts and informaion for the MagicMirror2",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yawnsde/MMM-MTA"
+  },
+  "keywords": [
+    "magic mirror",
+    "smart mirror",
+    "MTA"
+  ],
+  "author": "Stefan Krause",
+  "contributors": "https://github.com/yawnsde/MMM-MTA/graphs/contributors",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yawnsde/MMM-MTA/issues"
+  },
+  "homepage": "https://github.com/yawnsde/MMM-MTA#readme",
+  "dependencies": {
+    }
+}
