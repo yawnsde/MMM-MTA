@@ -1,0 +1,22 @@
+.delay {
+	color: #FF0000;
+}
+
+.mtaheader {
+	text-align: left;
+}
+
+.lineinfo {
+	text-align: right;
+	padding: 0px 5px 0px 5px;
+}
+
+.timeinfo {
+	padding: 0px 5px 0px 5px;	
+	text-align: left;
+}
+
+.destinationinfo {
+	padding: 0px 5px 0px 5px;	
+	text-align: left;
+}
