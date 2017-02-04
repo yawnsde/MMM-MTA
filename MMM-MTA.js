@@ -23,6 +23,138 @@ Module.register('MMM-MTA',{
 		retryDelay: 2500,
 
 		apiBase: "https://traintime.lirr.org/api/Departure",
+
+		showCustomHeader: true,
+
+		stationTable: {
+			"LIC": "Long Island City",
+			"HPA": "Hunterspoint Avenue",
+			"NYK": "Penn Station",
+			"WDD": "Woodside",
+			"FHL": "Forest Hills",
+			"KGN": "Kew Gardens",
+			"ATL": "Atlantic Terminal",
+			"NAV": "Nostrand Avenue",
+			"ENY": "East New York",
+			"JAM": "Jamaica",
+			"SSM": "Mets-Willets Point",
+			"FLS": "Flushing-Main Street",
+			"MHL": "Murray Hill",
+			"BDY": "Broadway",
+			"ADL": "Auburndale",
+			"BSD": "Bayside",
+			"DGL": "Douglaston",
+			"LNK": "Little Neck",
+			"GNK": "Great Neck",
+			"MHT": "Manhasset",
+			"PDM": "Plandome",
+			"PWS": "Port Washington",
+			"HOL": "Hollis",
+			"QVG": "Queens Village",
+			"BRT": "Belmont Park",
+			"BRS": "Bellerose",
+			"FPK": "Floral Park",
+			"SMR": "Stewart Manor",
+			"NBD": "Nassau Boulevard",
+			"GCY": "Garden City",
+			"CLP": "Country Life Press",
+			"HEM": "Hempstead",
+			"NHP": "New Hyde Park",
+			"MAV": "Merillon Avenue",
+			"MIN": "Mineola",
+			"EWN": "East Williston",
+			"ABT": "Albertson",
+			"RSN": "Roslyn",
+			"GVL": "Greenvale",
+			"GHD": "Glen Head",
+			"SCF": "Sea Cliff",
+			"GST": "Glen Street",
+			"GCV": "Glen Cove",
+			"LVL": "Locust Valley",
+			"OBY": "Oyster Bay",
+			"CPL": "Carle Place",
+			"WBY": "Westbury",
+			"HVL": "Hicksville",
+			"SYT": "Syosset",
+			"CSH": "Cold Spring Harbor",
+			"HUN": "Huntington",
+			"GWN": "Greenlawn",
+			"NPT": "Northport",
+			"KPK": "Kings Park",
+			"STN": "Smithtown",
+			"SJM": "St. James",
+			"BK": "Stony Brook",
+			"PJN": "Port Jefferson",
+			"BPG": "Bethpage",
+			"FMD": "Farmingdale",
+			"PLN": "Pinelawn",
+			"WYD": "Wyandanch",
+			"DPK": "Deer Park",
+			"BWD": "Brentwood",
+			"CI": "Central Islip",
+			"RON": "Ronkonkoma",
+			"MFD": "Medford",
+			"YPK": "Yaphank",
+			"RHD": "Riverhead",
+			"MAK": "Mattituck",
+			"SHD": "Southold",
+			"GPT": "Greenport",
+			"SAB": "St. Albans",
+			"LMR": "Locust Manor",
+			"LTN": "Laurelton",
+			"ROS": "Rosedale",
+			"VSM": "Valley Stream",
+			"WWD": "Westwood",
+			"MVN": "Malverne",
+			"LVW": "Lakeview",
+			"HGN": "Hempstead Gardens",
+			"WHD": "West Hempstead",
+			"GBN": "Gibson",
+			"HWT": "Hewlett",
+			"WMR": "Woodmere",
+			"CHT": "Cedarhurst",
+			"LCE": "Lawrence",
+			"IWD": "Inwood",
+			"FRY": "Far Rockaway",
+			"LYN": "Lynbrook",
+			"CAV": "Centre Avenue",
+			"ERY": "East Rockaway",
+			"ODE": "Oceanside",
+			"IPK": "Island Park",
+			"LBH": "Long Beach",
+			"RVC": "Rockville Centre",
+			"BWN": "Baldwin",
+			"FPT": "Freeport",
+			"MRK": "Merrick",
+			"BMR": "Bellmore",
+			"WGH": "Wantagh",
+			"SFD": "Seaford",
+			"MQA": "Massapequa",
+			"MPK": "Massapequa Park",
+			"AVL": "Amityville",
+			"CPG": "Copiague",
+			"LHT": "Lindenhurst",
+			"BTA": "Babylon",
+			"BSR": "Bay Shore",
+			"ISP": "Islip",
+			"GRV": "Great River",
+			"ODL": "Oakdale",
+			"SVL": "Sayville",
+			"PD": "Patchogue",
+			"BPT": "Bellport",
+			"MSY": "Mastic-Shirley",
+			"SPK": "Speonk",
+			"WHN": "Westhampton",
+			"HBY": "Hampton Bays",
+			"SHN": "Southampton",
+			"BHN": "Bridgehampton",
+			"EHN": "East Hampton",
+			"AGT": "Amagansett",
+			"MTK": "Montauk",
+			"HAR": "HAROLD Interlocking",
+			"BOL": "Boland's Landing",
+			"HIL": "Hillside Facility"
+		},
 	},
 
 	// Define required scripts.
@@ -68,63 +200,26 @@ Module.register('MMM-MTA',{
 			return wrapper;
 		}
 
-		var table = document.createElement("table");
-		table.id = "mtatable";
-		table.className = "small thin light";
-		
-		var row = document.createElement("tr");
-
-		var timeHeader = document.createElement("th");
-		timeHeader.innerHTML = "Departure";
-		timeHeader.className = "mtaheader";
-		row.appendChild(timeHeader);
-		var lineHeader = document.createElement("th");
-		lineHeader.innerHTML = "Train ID";
-		lineHeader.className = "mtaheader";
-		lineHeader.colSpan = 2;
-		row.appendChild(lineHeader);
-		var destinationHeader = document.createElement("th");
-		destinationHeader.innerHTML = "Destination";
-		destinationHeader.className = "mtaheader";
-		row.appendChild(destinationHeader);		
-		table.appendChild(row);
-		
 		for (var i in this.departures) {
 			var currentDeparture = this.departures[i];
-			var row = document.createElement("tr");
-			table.appendChild(row);
-			
-			var cellDeparture = document.createElement("td");
-			cellDeparture.innerHTML = currentDeparture.time;
-			cellDeparture.className = "timeinfo";
-			if (currentDeparture.delay > 0) {
-				var spanDelay = document.createElement("span");
-				spanDelay.innerHTML = ' +' + currentDeparture.delay;
-				spanDelay.className = "small delay";
-				cellDeparture.appendChild(spanDelay);
-			}
-			row.appendChild(cellDeparture);
+			var divAlert = document.createElement("div");
+			divAlert.innerHTML = "Train " + currentDeparture.lineLabel + " is running " + currentDeparture.delay + " minutes late";
+			wrapper.appendChild(divAlert);
 
-			var cellTransport = document.createElement("td");
-			cellTransport.className = "timeinfo";
-			var symbolTransportation = document.createElement("span");
-			symbolTransportation.className = ""; //this.config.iconTable[currentDeparture.transportation];
-			cellTransport.appendChild(symbolTransportation);
-			row.appendChild(cellTransport);
-			
-			var cellLine = document.createElement("td");
-			cellLine.innerHTML = currentDeparture.lineLabel;
-			cellLine.className = "lineinfo";
-			row.appendChild(cellLine);
-			
-			var cellDirection = document.createElement("td");
-			cellDirection.innerHTML = currentDeparture.direction;
-			cellDirection.className = "destinationinfo";
-			row.appendChild(cellDirection);			
 		}
-		wrapper.appendChild(table);
 
 		return wrapper;	},
+
+// ##################################################################################	
+// Override getHeader method
+// ##################################################################################	
+	getHeader: function() {
+		if (this.config.showCustomHeader) {
+			return this.data.header + " (" + this.config.stationTable[this.config.sStation] + ")";
+		}
+
+		return this.data.header;
+	},	
 
 	/* processDepartures(data)
 	 * Uses the received data to set the various values.
@@ -141,15 +236,24 @@ Module.register('MMM-MTA',{
 		this.departures = [];
 
 		for (var i in data.TRAINS) {
+
 			var t = data.TRAINS[i];
-			this.departures.push({
-				time: t.SCHED,
-				eta: t.ETA,
-				delay: 1, //(((t.time).indexOf('+') > 0) ? (t.time).substring(6,(t.time).length) : 0),
-				lineLabel: t.TRAIN_ID,
-				destination: t.DEST,
-				direction: t.DIR,
-			});
+
+			var scheduledCalc = moment(t.SCHED, "MM-DD-YYYY HH:mm:ss");
+			var actualCalc = moment(t.ETA, "MM-DD-YYYY HH:mm:ss");
+			var delayMinutes = actualCalc.diff(scheduledCalc, 'minutes');
+
+			if (delayMinutes > 1) {
+
+				this.departures.push({
+					time: t.SCHED,
+					eta: t.ETA,
+					delay: delayMinutes,
+					lineLabel: t.TRAIN_ID,
+					destination: t.DEST,
+					direction: t.DIR,
+				});
+			}
 		}
 
 		this.loaded = true;
