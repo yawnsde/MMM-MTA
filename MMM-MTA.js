@@ -18,6 +18,7 @@ Module.register('MMM-MTA',{
 		updateInterval: 1000 * 3600, //update every hour
 		timeFormat: config.timeFormat,
 		lang: config.language,
+		minimumDelay: 1,
 
 		initialLoadDelay: 0, // 0 seconds delay
 		retryDelay: 2500,
@@ -201,9 +202,10 @@ Module.register('MMM-MTA',{
 		}
 
 		for (var i in this.departures) {
-			var currentDeparture = this.departures[i];
+			var cD = this.departures[i];
 			var divAlert = document.createElement("div");
-			divAlert.innerHTML = "Train " + currentDeparture.lineLabel + " is running " + currentDeparture.delay + " minutes late";
+			divAlert.className = "small thin light";
+			divAlert.innerHTML = "Train " + cD.lineLabel + " from &quot;" + cD.sStation + "&quot; to &quot;" + cD.eStation + "&quot; is running " + cD.delay + " minutes late";
 			wrapper.appendChild(divAlert);
 
 		}
@@ -243,7 +245,8 @@ Module.register('MMM-MTA',{
 			var actualCalc = moment(t.ETA, "MM-DD-YYYY HH:mm:ss");
 			var delayMinutes = actualCalc.diff(scheduledCalc, 'minutes');
 
-			if (delayMinutes > 1) {
+			// add trains with defined delay only, all others are left out
+			if (delayMinutes >= this.config.minimumDelay) {
 
 				this.departures.push({
 					time: t.SCHED,
@@ -252,6 +255,8 @@ Module.register('MMM-MTA',{
 					lineLabel: t.TRAIN_ID,
 					destination: t.DEST,
 					direction: t.DIR,
+					sStation: this.config.stationTable[this.config.sStation],
+					eStation: this.config.stationTable[t.DEST]
 				});
 			}
 		}
@@ -269,6 +274,10 @@ Module.register('MMM-MTA',{
 				this.processDepartures(JSON.parse(payload));
 				this.updateDom();
     		}
+	},
+
+	hours12: function(date) {
+  		return (date.getHours() + 24) % 12 || 12;
 	}
 
 });
