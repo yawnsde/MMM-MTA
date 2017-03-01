@@ -25,10 +25,8 @@ module.exports = NodeHelper.create({
 		request({
 			url: myUrl,
 			method: 'GET',
-			//headers: { 'RNV_API_TOKEN': this.config.apiKey }
 		}, function (error, response, body) {
 			if (!error && response.statusCode == 200) {
-				console.log(myUrl);
 				self.sendSocketNotification("DATA", body);
 			}
 		});

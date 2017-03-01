@@ -18,7 +18,7 @@ Module.register('MMM-MTA',{
 		updateInterval: 1000 * 3600, //update every hour
 		timeFormat: config.timeFormat,
 		lang: config.language,
-		minimumDelay: 1,
+		minimumDelay: 0,
 
 		initialLoadDelay: 0, // 0 seconds delay
 		retryDelay: 2500,
@@ -195,19 +195,14 @@ Module.register('MMM-MTA',{
 			return wrapper;
 		}
 
-		if (!this.departures.length) {
-			wrapper.innerHTML = "No data";
-			wrapper.className = "dimmed light small";
-			return wrapper;
-		}
-
-		for (var i in this.departures) {
-			var cD = this.departures[i];
-			var divAlert = document.createElement("div");
-			divAlert.className = "small thin light";
-			divAlert.innerHTML = "Train " + cD.lineLabel + " from &quot;" + cD.sStation + "&quot; to &quot;" + cD.eStation + "&quot; is running " + cD.delay + " minutes late";
-			wrapper.appendChild(divAlert);
-
+		if (this.departures.length) {
+			for (var i in this.departures) {
+				var cD = this.departures[i];
+				var divAlert = document.createElement("div");
+				divAlert.className = "small thin light";
+				divAlert.innerHTML = "Train " + cD.lineLabel + " from &quot;" + cD.sStation + "&quot; to &quot;" + cD.eStation + "&quot; is running " + cD.delay + " " + ((cD.delay == 1) ? "minute" : "minutes" ) + " late";
+				wrapper.appendChild(divAlert);
+			}
 		}
 
 		return wrapper;	},
@@ -245,8 +240,15 @@ Module.register('MMM-MTA',{
 			var actualCalc = moment(t.ETA, "MM-DD-YYYY HH:mm:ss");
 			var delayMinutes = actualCalc.diff(scheduledCalc, 'minutes');
 
+			var scheduledAMPM = ( (scheduledCalc.hour() > 12 ) ? 'PM' : 'AM'  );
+			var actualAMPM = 'PM'; //( (actualCalc.hour() > 12 ) ? 'PM' : 'AM'  );
+			var direction = ( (actualAMPM == 'AM') ? 'W' : 'E' );
+			var sStation = ( (actualAMPM == 'AM') ? this.config.stationTable[this.config.sStation] : this.config.stationTable[t.DEST] );
+			var eStation = ( (actualAMPM == 'AM') ? this.config.stationTable[t.DEST] : this.config.stationTable[this.config.sStation] );
+
+
 			// add trains with defined delay only, all others are left out
-			if (delayMinutes >= this.config.minimumDelay) {
+			if (delayMinutes >= this.config.minimumDelay && t.DIR == direction) {
 
 				this.departures.push({
 					time: t.SCHED,
@@ -254,9 +256,11 @@ Module.register('MMM-MTA',{
 					delay: delayMinutes,
 					lineLabel: t.TRAIN_ID,
 					destination: t.DEST,
-					direction: t.DIR,
-					sStation: this.config.stationTable[this.config.sStation],
-					eStation: this.config.stationTable[t.DEST]
+					scheduledAMPM: scheduledAMPM,
+					actualAMPM: actualAMPM,
+					sStation: sStation,
+					eStation: eStation,
+					direction: t.DIR
 				});
 			}
 		}
