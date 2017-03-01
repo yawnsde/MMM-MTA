@@ -18,144 +18,14 @@ Module.register('MMM-MTA',{
 		updateInterval: 1000 * 3600, //update every hour
 		timeFormat: config.timeFormat,
 		lang: config.language,
-		minimumDelay: 0,
+		minimumDelay: 1,
 
 		initialLoadDelay: 0, // 0 seconds delay
 		retryDelay: 2500,
 
 		apiBase: "https://traintime.lirr.org/api/Departure",
 
-		showCustomHeader: true,
-
-		stationTable: {
-			"LIC": "Long Island City",
-			"HPA": "Hunterspoint Avenue",
-			"NYK": "Penn Station",
-			"WDD": "Woodside",
-			"FHL": "Forest Hills",
-			"KGN": "Kew Gardens",
-			"ATL": "Atlantic Terminal",
-			"NAV": "Nostrand Avenue",
-			"ENY": "East New York",
-			"JAM": "Jamaica",
-			"SSM": "Mets-Willets Point",
-			"FLS": "Flushing-Main Street",
-			"MHL": "Murray Hill",
-			"BDY": "Broadway",
-			"ADL": "Auburndale",
-			"BSD": "Bayside",
-			"DGL": "Douglaston",
-			"LNK": "Little Neck",
-			"GNK": "Great Neck",
-			"MHT": "Manhasset",
-			"PDM": "Plandome",
-			"PWS": "Port Washington",
-			"HOL": "Hollis",
-			"QVG": "Queens Village",
-			"BRT": "Belmont Park",
-			"BRS": "Bellerose",
-			"FPK": "Floral Park",
-			"SMR": "Stewart Manor",
-			"NBD": "Nassau Boulevard",
-			"GCY": "Garden City",
-			"CLP": "Country Life Press",
-			"HEM": "Hempstead",
-			"NHP": "New Hyde Park",
-			"MAV": "Merillon Avenue",
-			"MIN": "Mineola",
-			"EWN": "East Williston",
-			"ABT": "Albertson",
-			"RSN": "Roslyn",
-			"GVL": "Greenvale",
-			"GHD": "Glen Head",
-			"SCF": "Sea Cliff",
-			"GST": "Glen Street",
-			"GCV": "Glen Cove",
-			"LVL": "Locust Valley",
-			"OBY": "Oyster Bay",
-			"CPL": "Carle Place",
-			"WBY": "Westbury",
-			"HVL": "Hicksville",
-			"SYT": "Syosset",
-			"CSH": "Cold Spring Harbor",
-			"HUN": "Huntington",
-			"GWN": "Greenlawn",
-			"NPT": "Northport",
-			"KPK": "Kings Park",
-			"STN": "Smithtown",
-			"SJM": "St. James",
-			"BK": "Stony Brook",
-			"PJN": "Port Jefferson",
-			"BPG": "Bethpage",
-			"FMD": "Farmingdale",
-			"PLN": "Pinelawn",
-			"WYD": "Wyandanch",
-			"DPK": "Deer Park",
-			"BWD": "Brentwood",
-			"CI": "Central Islip",
-			"RON": "Ronkonkoma",
-			"MFD": "Medford",
-			"YPK": "Yaphank",
-			"RHD": "Riverhead",
-			"MAK": "Mattituck",
-			"SHD": "Southold",
-			"GPT": "Greenport",
-			"SAB": "St. Albans",
-			"LMR": "Locust Manor",
-			"LTN": "Laurelton",
-			"ROS": "Rosedale",
-			"VSM": "Valley Stream",
-			"WWD": "Westwood",
-			"MVN": "Malverne",
-			"LVW": "Lakeview",
-			"HGN": "Hempstead Gardens",
-			"WHD": "West Hempstead",
-			"GBN": "Gibson",
-			"HWT": "Hewlett",
-			"WMR": "Woodmere",
-			"CHT": "Cedarhurst",
-			"LCE": "Lawrence",
-			"IWD": "Inwood",
-			"FRY": "Far Rockaway",
-			"LYN": "Lynbrook",
-			"CAV": "Centre Avenue",
-			"ERY": "East Rockaway",
-			"ODE": "Oceanside",
-			"IPK": "Island Park",
-			"LBH": "Long Beach",
-			"RVC": "Rockville Centre",
-			"BWN": "Baldwin",
-			"FPT": "Freeport",
-			"MRK": "Merrick",
-			"BMR": "Bellmore",
-			"WGH": "Wantagh",
-			"SFD": "Seaford",
-			"MQA": "Massapequa",
-			"MPK": "Massapequa Park",
-			"AVL": "Amityville",
-			"CPG": "Copiague",
-			"LHT": "Lindenhurst",
-			"BTA": "Babylon",
-			"BSR": "Bay Shore",
-			"ISP": "Islip",
-			"GRV": "Great River",
-			"ODL": "Oakdale",
-			"SVL": "Sayville",
-			"PD": "Patchogue",
-			"BPT": "Bellport",
-			"MSY": "Mastic-Shirley",
-			"SPK": "Speonk",
-			"WHN": "Westhampton",
-			"HBY": "Hampton Bays",
-			"SHN": "Southampton",
-			"BHN": "Bridgehampton",
-			"EHN": "East Hampton",
-			"AGT": "Amagansett",
-			"MTK": "Montauk",
-			"HAR": "HAROLD Interlocking",
-			"BOL": "Boland's Landing",
-			"HIL": "Hillside Facility"
-		},
+		stationTable: null
 	},
 
 	// Define required scripts.
@@ -170,6 +40,11 @@ Module.register('MMM-MTA',{
 	
 	start: function() {
 		Log.info('Starting module: ' + this.name);
+
+		this.loadStationFile((response) => {
+				this.config.stationTable = JSON.parse(response);
+			});
+
 		this.loaded = false;
 		this.sendSocketNotification('CONFIG', this.config);
 	},
@@ -211,10 +86,6 @@ Module.register('MMM-MTA',{
 // Override getHeader method
 // ##################################################################################	
 	getHeader: function() {
-		if (this.config.showCustomHeader) {
-			return this.data.header + " (" + this.config.stationTable[this.config.sStation] + ")";
-		}
-
 		return this.data.header;
 	},	
 
@@ -223,6 +94,12 @@ Module.register('MMM-MTA',{
 	 *
 	 */
 	processDepartures: function(data) {
+
+		if (this.config.stationTable == null) {
+			// file with station names is not yet loaded
+			this.config.loaded = false;
+			return;
+		}
 
 		if (!data.TRAINS) {
 			// Did not receive usable new data.
@@ -241,7 +118,7 @@ Module.register('MMM-MTA',{
 			var delayMinutes = actualCalc.diff(scheduledCalc, 'minutes');
 
 			var scheduledAMPM = ( (scheduledCalc.hour() > 12 ) ? 'PM' : 'AM'  );
-			var actualAMPM = 'PM'; //( (actualCalc.hour() > 12 ) ? 'PM' : 'AM'  );
+			var actualAMPM = ( (actualCalc.hour() > 12 ) ? 'PM' : 'AM'  );
 			var direction = ( (actualAMPM == 'AM') ? 'W' : 'E' );
 			var sStation = ( (actualAMPM == 'AM') ? this.config.stationTable[this.config.sStation] : this.config.stationTable[t.DEST] );
 			var eStation = ( (actualAMPM == 'AM') ? this.config.stationTable[t.DEST] : this.config.stationTable[this.config.sStation] );
@@ -282,6 +159,18 @@ Module.register('MMM-MTA',{
 
 	hours12: function(date) {
   		return (date.getHours() + 24) % 12 || 12;
-	}
+	},
+
+	loadStationFile: function(callback) {
+		var xobj = new XMLHttpRequest();
+		xobj.overrideMimeType("application/json");
+		xobj.open("GET", this.file("station_list.json"), true);
+		xobj.onreadystatechange = function () {
+			if (xobj.readyState == 4 && xobj.status == "200") {
+				callback(xobj.responseText);
+			}
+		};
+		xobj.send(null);
+	},	
 
 });
