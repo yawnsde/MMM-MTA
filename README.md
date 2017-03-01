@@ -26,5 +26,7 @@ The following properties can be configured:
 
 | **Option** | **Values** | **Description** |
 | --- | --- | --- |
-| `sStation` | **REQUIRED** | LATER |
-| `mtaAPIKey` | **REQUIRED** | LATER |
+| `sStation` | **REQUIRED** | This code is used to define your starting point. Valid entries are 2 or 3 letter codes. All entries can be found in the station_list.json |
+| `mtaAPIKey` | **REQUIRED** | This code needs to be requested from LIRR vendor, see above. |
+| `minimumDelay` | OPTIONAL | Use this to define the minimum delay you want to check for. Default is 1 |
+
