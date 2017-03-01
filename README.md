@@ -12,7 +12,7 @@ Activate the module by adding it to the config.js file as shown below.
 modules: [
 {
   module: 'MMM-MTA',
-  position: 'top_right',
+  position: 'bottom_bar',
   config: {
     sStation: '',
     mtaAPIKey: '' //API KEY needs to be requested from datamine.mta.info
